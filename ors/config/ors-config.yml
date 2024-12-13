@@ -1,0 +1,77 @@
+server:
+  port: 8080
+  error:
+    whitelabel:
+      enabled: false
+  servlet:
+    context-path: /ors
+  tomcat:
+    keep-alive-timeout: 30000
+
+ors:
+  services:
+    optimization:
+      enabled: true
+      maximum_jobs: 500
+      maximum_vehicles: 100
+  engine:
+    profile_default:
+      build:
+        source_file: /home/ors/files/turkey-latest.osm.pbf
+    profiles:
+      car:
+        enabled: true
+        encoder_name: driving-car
+        build:
+          encoder_options:
+            turn_costs: true
+            block_fords: false
+            use_acceleration: true
+          preparation:
+            min_network_size: 200
+            methods:
+              ch:
+                enabled: true
+                threads: 4
+                weightings: fastest
+              lm:
+                enabled: false
+              core:
+                enabled: true
+                threads: 4
+                weightings: fastest,shortest
+                landmarks: 64
+                lmsets: highways;allow_all
+          ext_storages:
+            WayCategory:
+            HeavyVehicle:
+            Tollways:
+            WaySurfaceType:
+            RoadAccessRestrictions:
+              use_for_warnings: true
+        service:
+          execution:
+            methods:
+              lm:
+                active_landmarks: 6
+              core:
+                active_landmarks: 6
+  logging:
+    level:
+      root: INFO
+      org.heigit: INFO
+
+springdoc:
+  swagger-ui:
+    enabled: true
+    path: /swagger-ui
+    tryItOutEnabled: true
+    filter: false
+    syntaxHighlight:
+      activated: true
+    showExtensions: true
+  api-docs:
+    path: /v2/api-docs
+    version: OPENAPI_3_0
+  packages-to-scan: org.heigit.ors
+  pathsToMatch: /v2/**

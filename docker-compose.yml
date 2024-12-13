@@ -1,0 +1,32 @@
+version: '3.8'
+services:
+  ors:
+    image: openrouteservice/openrouteservice:latest
+    container_name: ors
+    ports:
+      - "3400:8080"
+    volumes:
+      - ./ors:/home/ors
+    environment:
+      #REBUILD_GRAPHS: "True"  # Harita verilerini başlatıldığında yeniden oluştur
+      CONTAINER_LOG_LEVEL: "DEBUG"  # Log seviyesi
+      XMS: 4g  # Java başlangıç belleği
+      XMX: 6g  # Java maksimum bellek
+    networks:
+      - ors-vroom-network
+
+  vroom:
+    image: ghcr.io/vroom-project/vroom-docker:latest
+    container_name: vroom
+    volumes:
+      - ./vroom:/conf
+    environment:
+      VROOM_DOCKER: ors
+    ports:
+      - "6060:3000"
+    networks:
+      - ors-vroom-network
+
+networks:
+  ors-vroom-network:
+    driver: bridge
